@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+    <link rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}"/>
+    <link rel="icon" type="image/png" href="{{url_for('static', filename='img/fav.png')}}">
+    <title>Personality Types Predictor</title>
+
+    <script type="text/javascript">
+
+        function setType() {
+            let type = '{{type}}';
+            let types = "eisntfpj";
+
+
+            let errMsg = "Sorry, an error has occurred <br/> Check your username and try again";
+
+            endLoading();
+            if (type == 'error') {
+                document.getElementById("yTypeD").innerHTML = errMsg;
+                document.getElementById("yTypeD").classList.add("error");
+                document.getElementById("yTypeD").classList.remove("opacity");
+            } else if (type !== 'none') {
+                for (let i = 0; i < types.length; i++) {
+                    let t = types.charAt(i)
+                    if (type.includes(t))
+                        document.getElementById(t).classList.add("highlighted_type");
+                    else
+                        document.getElementById(t).classList.add("not_highlighted_type");
+                    document.getElementById(types.charAt(i)).classList.remove("type_hover");
+                }
+
+                document.getElementById("yType").classList.remove("opacity");
+                document.getElementById("yTypeD").classList.remove("opacity");
+            }
+        }
+
+
+        function resetType() {
+            let types = "eisntfpj";
+            let stdMsg = "Your Myers-Briggs Personality Indicator is";
+            for (let i = 0; i < types.length; i++) {
+                let t = types.charAt(i)
+                document.getElementById(t).classList.remove("highlighted_type");
+                document.getElementById(t).classList.remove("not_highlighted_type");
+                document.getElementById(t).classList.add("type_hover");
+            }
+
+            document.getElementById("yType").classList.add("opacity");
+            document.getElementById("yTypeD").classList.add("opacity");
+            document.getElementById("yTypeD").innerHTML = stdMsg;
+            document.getElementById("yTypeD").classList.remove("error");
+        }
+
+        function startLoading() {
+            resetType();
+            document.getElementById("load").classList.remove("opacity");
+        }
+
+        function endLoading() {
+            document.getElementById("load").classList.add("opacity");
+        }
+
+    </script>
+</head>
+
+<body onload="setType()">
+<div class="wrapper">
+
+    <div class="container">
+
+        <div class="left">
+            <div>
+                <div class="header">
+                    <img id="twitter" src="{{url_for('static', filename='img/twitter_icon.png')}}"
+                         onclick="resetType()"/>
+                    <h1 class="title">TWITTER USER <br/>PERSONALITY PREDICTION</h1>
+                </div>
+
+                <p class="description">
+                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Maxime mollitia,
+                    molestiae quas vel sint commodi repudiandae consequuntur voluptatum laborum
+                    numquam blanditiis harum quisquam eius sed odit fugiat iusto fuga praesentium
+                    optio, eaque rerum! Provident similique accusantium nemo autem.
+                </p>
+
+                <form action="" method="post">
+                    <input type="text" name="handle" placeholder="@Username" value="{{user}}">
+                    <button type="submit" onclick="startLoading()">START</button>
+                </form>
+            </div>
+            <div class="results">
+                <h5 id="yTypeD" class="yourTypeDescription opacity">Your Myers-Briggs Personality Indicator is</h5>
+                <h1 id="yType" class="yourType opacity">{{type}}</h1>
+                <div id="load" class="opacity loader">
+                    <div class="triple-spinner"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="right">
+            <div class="row">
+                <h3 class="question">Most of the time where do you choose to direct your energy?</h3>
+                <div class="dichotomy">
+                    <fieldset class="type type_hover" id="e">
+                        <legend style="background-color: rgba(9, 5, 90, 0.9);">EXTROVERSION</legend>
+                        You usually direct your energy towards other people, objects, circumstances, and the world
+                        outside of you. You are more of an extrovert.
+                    </fieldset>
+
+                    <fieldset class="type type_hover" id="i">
+                        <legend style="background-color: rgba(229, 0, 121, 0.9);">INTROVERSION</legend>
+                        You usually direct your energy inwards to thinking and contemplating concepts, information,
+                        ideas, principles or beliefs. You are more of an introvert.
+                    </fieldset>
+                </div>
+            </div>
+
+            <div class="row">
+                <h3 class="question">How do you take in and act on information?</h3>
+                <div class="dichotomy">
+                    <fieldset class="type type_hover" id="s">
+                        <legend style="background-color: rgba(237, 183, 0, 0.9);">SENSING</legend>
+                        You want empirical information, hard facts and detailed data. You want to have a clear and
+                        practical understanding of every situation.
+                    </fieldset>
+
+                    <fieldset class="type type_hover" id="n">
+                        <legend style="background-color: rgba(93, 34, 98, 0.9);">INTUITION</legend>
+                        You would rather follow your gut on things, dive into the unknown, and are open to new things
+                        you have not tried before or know little about.
+                    </fieldset>
+                </div>
+            </div>
+
+            <div class="row">
+                <h3 class="question">How do you decide on things and make choices?</h3>
+                <div class="dichotomy">
+                    <fieldset class="type type_hover" id="t">
+                        <legend style="background-color: rgba(180, 23, 130, 0.9);">THINKING</legend>
+                        You analyse the information and facts available and calculate the possibilities using cold
+                        logic. Then you decide and act on your decision.
+                    </fieldset>
+
+                    <fieldset class="type type_hover" id="f">
+                        <legend style="background-color: rgba(215, 82, 125, 0.9);">FEELING</legend>
+                        Your decisions are based on what you believe and the things that you value and care for. You act
+                        by following the principles you hold on to.
+                    </fieldset>
+                </div>
+            </div>
+
+            <div class="row">
+                <h3 class="question">How do you go about organising things around you and your life?</h3>
+                <div class="dichotomy">
+                    <fieldset class="type type_hover" id="j">
+                        <legend style="background-color: rgba(63, 81, 181, 0.9);">JUDGING</legend>
+                        This means you want everything in your life to be as structured and organised as possible. You
+                        prefer things to be stable and predictable.
+                    </fieldset>
+
+                    <fieldset class="type type_hover" id="p">
+                        <legend style="background-color: rgba(0, 170, 178, 0.9);">PERCEPTION</legend>
+                        You would rather go with the flow, see how things unfold and turn out, flexibly responding to
+                        situations as they come.
+                    </fieldset>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <ul class="bg-bubbles">
+        <li>I</li>
+        <li>E</li>
+        <li>S</li>
+        <li>N</li>
+        <li>T</li>
+        <li>F</li>
+        <li>P</li>
+        <li>J</li>
+    </ul>
+
+</div>
+
+</body>
+</html>
