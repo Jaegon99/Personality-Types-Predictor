@@ -1,9 +1,12 @@
-# Personality-Types-Predictor
-Il progetto nasce come replica ed estensione di un progetto già esistente, discusso nel report disponibile nell’archivio di web.stanford.edu<sup>[1]</sup>. Il progetto va ad utilizzare il machine learning per ricreare il classificatore discusso nel report, che questa volta sarà in grado di utilizzare l'API di Twitter per acquisire il feed di un account, per poi classificarlo in tempo reale in un Myers-Briggs Type Indicator (MBTI) <sup>[2]</sup>, una metrica che utilizza un risultato di 4 lettere (eg. INFJ o ENFP) per riassumere le diverse caratteristiche della personalità in termini di come gli individui percepiscono il mondo e prendono decisioni.
+# Personality Types Predictor
+Questo progetto è stato realizzato come replica ed estensione di un progetto già esistente, discusso nel report disponibile nell’archivio di ***web.stanford.edu<sup>[1]</sup>***. Intendiamo utilizzare l'apprendimento automatico per costruire un classificatore che accetterà dei post ricavati da un profilo Twitter come input e produrrà come output una previsione del tipo di personalità MBTI dell'autore di detto testo.
+Il progetto va ad utilizzare il machine learning per ricreare il classificatore discusso nel report, che grazie all'aggiunta di un interfaccia grafica e dell'integrazione con l'API di Twitter per acquisire il feed di un account, andrà a  classificare il profilo in tempo reale in un ***Myers-Briggs Type Indicator (MBTI) <sup>[2]</sup>***, una metrica che utilizza un risultato di 4 lettere (eg. INFJ o ENFP) per riassumere le diverse caratteristiche della personalità in termini di come gli individui percepiscono il mondo e prendono decisioni.
+
+Per avere un confronto con quanto prodotto e per verificare quanto affermato nel report, è stato prodotto anche un classificatore Naive Bayes che verrà discusso in seguito.
 
 Normalmente questo risultato deriva dall’utilizzo di questionari e test psicometrici somministrati a ciascuna persona, ma qui otterremo automaticamente un risultato attraverso una semplice interfaccia grafica web, alla quale basta fornire soltanto l’handle del proprio account Twitter.
 
-Il progetto è realizzato principalmente in Python, ad eccezione dell’interfaccia web che viene comunque gestita da python tramite l’utilizzo di Flask. 
+Il progetto è realizzato principalmente in Python, ad eccezione dell’interfaccia web che viene comunque gestita da Python tramite l’utilizzo di Flask. 
 </br></br>
 
 # Introduzione - MBTI
@@ -29,19 +32,23 @@ L’ultima dicotomia riguarda il modo in cui le persone tendono a trattare con i
 </br></br>
 
 # Dataset
-Il dataset<sup>[3]</sup> utilizzato è disponibile pubblicamente su Kaggle. Si tratta di un csv contenente oltre 8600 righe di dati, nel quale ognuna è composta da due colonne con i dati relativi ad una profilo: 
+Il ***dataset<sup>[3]</sup>*** utilizzato è disponibile pubblicamente su Kaggle. Si tratta di un csv contenente oltre 8600 righe di dati, nel quale ognuna è composta da due colonne con i dati relativi ad una profilo: 
 * Il tipo (codice/tipo MBTI di 4 lettere di questa persona)
 * Una sezione di ciascuna degli ultime 50 post che hanno pubblicato ogni voce separata da 3 caratteri pipe  "|||" 
 
-Questi dati sono stati raccolti tramite il forum PersonalityCafe, un forum online in cui agli utenti viene sottoposto prima il questionario per l’assegnazione del loro tipo MBTI e poi consente loro di chattare con altri utenti. Poiché ci sono cinquanta post inclusi per ogni utente, il numero di post è circa 430000. 
+Questi dati sono stati raccolti tramite PersonalityCafe, un forum online in cui gli utenti registrati sono stati sottoposti al questionario per l’assegnazione del loro tipo MBTI, per essere poi liberi di chattare con altri utenti sul forum. Poiché ci sono cinquanta post inclusi per ogni utente, il numero di post è circa 430000. 
 </br></br>
 
 
 ## Proporzionalità
-L’unico problema in questo dataset è la rappresentazione non uniforme dei tipi, che non rispettano le proporzioni del mondo reale, che rende necessaria una modifica per riportare una proporzione uniforme nel test set. Pertanto, si è operata una selezione sul dataset selezionando il tipo di MBTI con il minor numero di post e seguendo il riferimento alle proporzioni trovate su myersbriggs.org <sup>[4]</sup> si è creato un test set che rispetta le proporzioni reali. 
+Un problema evidente in questo dataset è la rappresentazione non uniforme dei tipi, che non rispettano le proporzioni del mondo reale. Questo, come discusso nel report, rende necessaria una modifica per riportare una proporzione uniforme nel test set. Pertanto, si è operata una selezione sul dataset selezionando il tipo di MBTI con il minor numero di post e seguendo il riferimento alle proporzioni trovate su ***myersbriggs.org <sup>[4]</sup>*** si è creato un test set che rispetta le proporzioni reali. 
 
 In questo modo si cercano di prevenire gli errori nei risultati, dovuti alla rappresentazione distorta delle classi nel set di test che sono 
 indicati nel grafico sottostante. 
+
+</br>
+
+![Proporzioni dei tipi nel Dataset](./static/img/report/dataset.png)
 </br></br>
 
 
@@ -74,53 +81,55 @@ non abbiamo raggiunto la dimensione e vengono rimossi se ce ne sono di più.
 Per l’embedding layer si usa una embedding matrix sotto forma di dizionario che mappa ogni parola lemmatizzata 
 alla rappresentazione GloVe a 50 dimensioni di quella parola. GloVe (Global Vectors for Word Representation) è un algoritmo 
 per ottenere rappresentazioni vettoriali per le parole. 
-In questo caso utilizziamo un vettore disponibile sul repository ufficiale<sup>[5]</sup> pre-addestrato su dati presi da Wikipedia.
+Il file che andremo ad utilizzare, a differenza del progetto originario, il vettore pre-addestrato su un enorme quantità di dati presi direttamente da Twitter, disponibile sul ***repository ufficiale<sup>[5]</sup>***.
+
+* Twitter (2B tweets, 27B tokens, 1.2M vocab, 200d vectors, 1.42 GB)
 </br></br>
 
 ## Recurrent Neural Network
-Sempre seguendo le indicazioni del report e dato che il set di dati che viene utilizzato è composto da dati 
-di testo sequenziali, confermiamo l’utilizzo di una rete neurale ricorrente (RNN).
-Tra i vari tipi di reti neurali ricorrenti (RNN) per questo passaggio, come descritto nel report, si sceglie 
-di utilizzare l'opzione LSTM che offre i migliori risultati. Dopo una serie di tentativi si dimostrano 
-ottimali anche i valori dei parametri utilizzati per il livello LSTM. 
-Ci serviamo sempre della libreria Keras per importare i vari layer e modelli utilizzati.
+Per ricreare il modello presentato nel report si utilizza una rete neurale ricorrente (RNN), e tra i vari tipi di RNN si sceglie di utilizzare l'opzione LSTM che offre i migliori risultati. 
+Per questo come per gli altri layer utilizzati ci serviamo della libreria Keras.
 </br></br>
 
 
 ## Dense Layer e Ottimizzazione
-Infine, utilizziamo uno dense layer con la sigmoide come funzione di attivazione per produrre un valore 
-compreso tra 0 e 1, che rappresenta la probabilità di classe prevista, poiché ci sono solo due classi.
-Inoltre, seguendo il report, viene utilizzata binary crossentropy per la loss function (poiché ci sono solo due classi) 
-e un ottimizzatore Adam dalla libreria degli optimizers per karas di tensorflow.
+Infine, utilizziamo uno dense layer con la sigmoide come funzione di attivazione per produrre un valore compreso tra 0 e 1, che rappresenta la probabilità di classe prevista, poiché ci sono solo due classi.
+Inoltre, seguendo il report, viene utilizzata binary crossentropy per la loss function (poiché ci sono solo due classi) e un ottimizzatore Adam dalla libreria degli optimizers per karas di tensorflow.
 </br></br>
 
 
 # Esperimento
-Una volta osservata la natura dell'indicatore Myers-Briggs ed anche la sproporzionalità delle classi nel test set, 
-si sceglie di suddividere la classificazione delle 16 classi in quattro attività di classificazione, facendo riferimento 
-alle quattro dicotomie dell’indicatore. Questo perché un tipo MBTI è composto da quattro classi binarie, dove ogni 
+Una volta osservata la natura dell'indicatore Myers-Briggs ed anche la sproporzionalità delle classi nel test set, si sceglie di suddividere la classificazione delle 16 classi in quattro attività di classificazione, facendo riferimento alle quattro dicotomie dell’indicatore. Questo perché un tipo MBTI è composto da quattro classi binarie, dove ogni 
 classe binaria rappresenta una dimensione della personalità come teorizzato dagli inventori del modello. 
 
-Pertanto si andranno ad addestrare quattro diversi classificatori binari, in modo tale che ciascuno 
-sia specializzato in una delle dimensioni della personalità. La somma dei risultati andrà a rappresentare
-il tipo di indicatore.
+Pertanto si andranno ad addestrare quattro diversi classificatori binari, in modo tale che ciascuno sia specializzato in una delle dimensioni della personalità. La somma dei risultati andrà a rappresentare il tipo di indicatore.
 
-Per confrontare i risultati con il report è stata svolta la classificazione dei post sul test set pre-elaborato
-e previsto la classe per ogni singolo post. Sono stati prodotti dunque l’accuracy e una matrice 
-di confusione per ogni dimensione MBTI.
-</br></br>
+Per confrontare i risultati con il report è stata svolta la classificazione dei post sul test set pre-elaborato e previsto la classe per ogni singolo post. 
+Sono stati prodotti dunque l’accuracy e una matrice di confusione per ogni dimensione MBTI.
+
+Allo stesso modo sono stati addestrati quattro classificatori Naive Bayes per le quattro dimensioni della personalità. Questo confronto con un classificatore Bayesiano servirà a
+determinare se l'utilizzo della RNN riesca a produrre risultati superiori come afferma il report. Si utilizza un MultinomialNB come classificatore per il confronto dalla libreria sklearn.
+
+>Due to the fact that our data set is composed of sequential text data, we decided to use a recurrent neural network in order to capture some of the information in the text data that would otherwise be ignored (e.g. as with a naive Bayes classifier).
+
+</br>
 
 # Risultati
-Per la classificazione dei post sul test set precedentemente elaborato, abbiamo una previsione della classe per ogni singolo post. 
-Qui seguono Il punteggio di accuratezza e una matrice di confusione per ogni dimensione MBTI.
+Per la classificazione dei post sul test set precedentemente elaborato, abbiamo una previsione della classe per ogni singolo post. Ad entrambi è stata applicata la k-fold cross validation (CV) che consiste nella suddivisione dell'insieme di dati totale in k=5 parti di uguale numerosità e, a ogni passo, la kª parte dell'insieme di dati viene utilizzata come test set, mentre la restante parte costituisce il train set. 
 
-* I/E Accuracy:   52.6 %
-* N/S Accuracy:  51.2 %
-* F/T Accuracy:  51.3 % 
-* P/J Accuracy:   57.6 % 
+Qui seguono Il punteggio di accuratezza e una matrice di confusione per ogni dimensione MBTI per il classificatore RNN.
+
+![Proporzioni dei tipi nel Dataset](./static/img/report/accuracyRNN.png)
 
 Sebbene ciò sembri indicare una debole capacità complessiva del nostro modello di classificare correttamente tutte e quattro le dimensioni MBTI, va notato che, in effetti, altri modelli che si concentrano sulla classificazione multiclasse di MBTI possono ottenere una maggiore precisione della classificazione perfetta, ma lo fanno rischiando di sbagliare completamente la loro previsione. 
 Il modello rappresenta un compromesso di questi due aspetti: otteniamo tassi inferiori di classificazione perfetta in cambio di tassi più elevati di classificazione approssimativamente corretta.
+
+Rimane confermata l'affermazione fatta sui classificatori Bayesiani che hanno prodotto
+* I/E Accuracy: 50.4 %
+* N/S Accuracy: 51.8 %
+* F/T Accuracy: 51.1 %
+* P/J Accuracy: 49.2 %
+
 </br></br>
 # Twitter
 Tramite l’utilizzo dell’API fornita da Twitter dopo la creazione di un account da sviluppatore, il sistema riesce a recuperare in forma 
@@ -129,11 +138,11 @@ e tokenizzazione che è stato descritto in precedenza per il dataset. Su questi 
 </br></br>
 
 # Interfaccia
-L’interfaccia è una semplice pagina web che può essere aperta in locale attraverso l’esecuzione di main.py. 
-Qui attraverso l’utilizzo di Flask avviene la comunicazione tra la pagina web e il sistema, che una volta ricevuto
-l’handle recupera i post e avvia la procedura.
+L’interfaccia è una pagina web che può essere aperta in locale attraverso l’esecuzione di main.py. Qui attraverso l’utilizzo di Flask avviene la comunicazione tra la pagina web e il sistema, che una volta ricevuto l’handle recupera i post e avvia la procedura.
 
 Segue uno screen dell’interfaccia grafica a termine dell’esecuzione del processo.
+
+![Proporzioni dei tipi nel Dataset](./static/img/report/screenshot.png)
 </br></br>
 
 # Rifetimenti
