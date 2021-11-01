@@ -1,0 +1,6 @@
+*** T/F TRAINING SET CROSS VALIDATION (POSTS) ***
+Total posts classified: 348921
+Accuracy: 0.5216023100577887
+Confusion matrix: 
+[[118074,  56292],
+ [110631,  63924]]

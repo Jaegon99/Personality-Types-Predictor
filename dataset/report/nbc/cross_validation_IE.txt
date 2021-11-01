@@ -1,0 +1,6 @@
+*** I/E TRAINING SET CROSS VALIDATION (POSTS) ***
+Total posts classified: 167936
+Accuracy: 0.5118318777738423
+Confusion matrix: 
+[[38451, 45021],
+ [36960, 47504]]

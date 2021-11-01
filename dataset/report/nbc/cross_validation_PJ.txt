@@ -1,0 +1,6 @@
+*** P/J TRAINING SET CROSS VALIDATION (POSTS) ***
+Total posts classified: 293609
+Accuracy: 0.5036834646950256
+Confusion matrix: 
+[[77032, 69241],
+ [76482, 70854]]
