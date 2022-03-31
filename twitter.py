@@ -29,6 +29,7 @@ def lemmatize(x):
     return np.array(lemmatized)
 
 
+# All Twitter keys and tokens have been revoked
 consumer_key = '8YCOrCne0omjoGKmFYts0zsRx'
 consumer_secret = 'BOHdap8jS6wbHI4oaHyn0XPsVqKXJcbQFXeNwcCJJYhWshE2OK'
 access_token = '1430845309924610050-PPsrLh5BVqzxWrdJbYse7erMAWUeGw'
